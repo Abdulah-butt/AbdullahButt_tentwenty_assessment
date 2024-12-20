@@ -1,0 +1,4 @@
+class DashboardInitialParams {
+
+const DashboardInitialParams();
+}

@@ -1,0 +1,4 @@
+class MediaLibraryInitialParams {
+
+const MediaLibraryInitialParams();
+}
