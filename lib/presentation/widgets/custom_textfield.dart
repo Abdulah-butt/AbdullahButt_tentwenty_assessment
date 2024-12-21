@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:tentwenty_assessment/core/utils/assets.dart';
 import '../../../core/extensions/theme_extension.dart';
 
+enum TextFieldMode { search, normal }
+
 class CustomTextField extends StatelessWidget {
-  TextEditingController controller;
-  String label;
-  String hint;
+  TextEditingController? controller;
+  String? hint;
   Function(String)? onChange;
   Function(String)? onSubmit;
   VoidCallback? onTap;
   bool? dealAsDate;
   bool? dealAsTime;
   bool whenTypingEnds;
-
+  String? label;
   bool? hide;
   bool? readOnly;
   bool? disable;
@@ -23,10 +26,10 @@ class CustomTextField extends StatelessWidget {
   bool? genderPicker;
   double? bottomPadding;
   String? initialValue;
-  bool? isDetail;
+  bool isDetail;
   double? height;
   bool autoFocus;
-
+  TextFieldMode textFieldMode;
   double? width;
 
   double? prefixHeight;
@@ -34,18 +37,23 @@ class CustomTextField extends StatelessWidget {
   Color? suffixColor;
   bool showCurrentCharacters;
   TextInputType? keyboard;
-
   List<TextInputFormatter>? inputFormatters;
   Function? suffixAction;
+  InputBorder? inputBorder;
+  FocusNode? focusNode;
+  Widget? suffix;
+  bool isMaxlength;
+  int? maxLength;
 
-  CustomTextField({Key? key,
-    required this.controller,
-    this.label="",
-    required this.hint,
+  CustomTextField({
+    Key? key,
+    this.controller,
+    this.hint,
     this.onChange,
     this.onSubmit,
     this.onTap,
     this.height,
+    this.label,
     this.width,
     this.initialValue,
     this.prefixPath,
@@ -55,10 +63,11 @@ class CustomTextField extends StatelessWidget {
     this.dealAsTime,
     this.inputFormatters,
     this.showCurrentCharacters = false,
+    this.textFieldMode = TextFieldMode.normal,
     this.autoFocus = false,
     this.whenTypingEnds = false,
     this.disable,
-    this.isDetail,
+    this.isDetail = false,
     this.keyboard,
     this.countryPicker,
     this.genderPicker,
@@ -67,78 +76,95 @@ class CustomTextField extends StatelessWidget {
     this.suffixHeight,
     this.suffixColor,
     this.suffixAction,
-    this.suffixPath})
-      : super(key: key);
+    this.inputBorder,
+    this.focusNode,
+    this.suffixPath,
+    this.suffix,
+    this.isMaxlength = false,
+    this.maxLength,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: bottomPadding ?? 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          label.isEmpty?const SizedBox.shrink():Text(
-            label ?? "",
-            style: context.textTheme.labelLarge,
+    return Container(
+      height: isDetail ? 150 : null,
+      margin: EdgeInsets.only(bottom: bottomPadding ?? 16),
+      child: TextFormField(
+        controller: controller,
+        initialValue: initialValue,
+        textAlignVertical: TextAlignVertical.top,
+        expands: isDetail,
+        onChanged: onChange,
+        focusNode: focusNode,
+        onFieldSubmitted: onSubmit,
+        autofocus: autoFocus,
+        inputFormatters: inputFormatters,
+        style: context.textTheme.titleMedium,
+        onTap: onTap,
+        keyboardType: keyboard ?? TextInputType.text,
+        maxLines: isDetail ? null : 1,
+        maxLength: isMaxlength ? maxLength : null,
+        readOnly: disable ??
+            dealAsDate ??
+            dealAsTime ??
+            countryPicker ??
+            genderPicker ??
+            readOnly ??
+            false,
+        obscureText: hide ?? false,
+        cursorColor: context.themeData.primaryColor,
+        onTapOutside: (event) {
+          FocusManager.instance.primaryFocus?.unfocus();
+        },
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: context.textTheme.labelMedium,
+          hintStyle: context.textTheme.bodyMedium?.copyWith(
+            color: context.colorTheme.tertiary,
           ),
-          label.isEmpty?const SizedBox.shrink():const SizedBox(
-            height: 8,
+          floatingLabelBehavior: FloatingLabelBehavior.always,
+          hintText: hint,
+          hintFadeDuration: const Duration(milliseconds: 500),
+          isDense: true,
+          filled: textFieldMode == TextFieldMode.normal ? false : true,
+          hoverColor: Colors.transparent,
+          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+          fillColor: context.colorTheme.surfaceDim,
+          prefixIcon: textFieldMode == TextFieldMode.search
+              ? SvgPicture.asset(Assets.search)
+              : null,
+          suffixIcon: suffixPath != null
+              ? Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: InkWell(
+                    onTap: () {
+                      suffixAction?.call();
+                    },
+                    child: SvgPicture.asset(suffixPath!),
+                  ),
+              )
+              : suffix,
+          suffixIconConstraints: BoxConstraints(
+            maxHeight: 30,
+            minWidth: 20,
           ),
-          SizedBox(
-            width: width??double.maxFinite,
-            child: TextFormField(
-              controller: controller,
-              initialValue: initialValue,
-              textAlignVertical: TextAlignVertical.top,
-              expands: isDetail != null ? true : false,
-              onChanged: onChange,
-              onFieldSubmitted: onSubmit,
-              autofocus: autoFocus,
-              inputFormatters: inputFormatters,
-              style: context.textTheme.bodyMedium,
-              onTap:onTap,
-              keyboardType: keyboard ?? TextInputType.text,
-              maxLines: isDetail != null ? null : 1,
-              readOnly: disable ??
-                  dealAsDate ??
-                  dealAsTime ??
-                  countryPicker ??
-                  genderPicker ??
-                  readOnly ??
-                  false,
-              obscureText: hide ?? false,
-              cursorColor: context.colorTheme.primary,
-              decoration: InputDecoration(
-                hintStyle: context.textTheme.bodyMedium?.copyWith(
-                    color: context.colorTheme.tertiary
-                ),
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-                hintText: hint,
-                hintFadeDuration: const Duration(milliseconds: 500),
-                isDense: true,
-                filled: true,
-                contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 10
-                ),
-                fillColor: context.colorTheme.surface,
-                enabledBorder: borderStyle(context),
-                focusedBorder: borderStyle(context, isActive: true),
-              ),
-            ),
-          ),
-        ],
+          enabledBorder: inputBorder ?? borderStyle(context),
+          focusedBorder: inputBorder ?? borderStyle(context, isActive: true),
+        ),
       ),
     );
   }
 
-
   borderStyle(BuildContext context, {bool isActive = false}) {
     return OutlineInputBorder(
-        borderSide:
-        BorderSide(color: context.colorTheme.tertiaryContainer, width: 1),
-        borderRadius: BorderRadius.circular(10));
+      borderRadius: BorderRadius.circular(
+          textFieldMode == TextFieldMode.normal ? 10 : 30),
+      borderSide: BorderSide(
+        color: textFieldMode == TextFieldMode.normal
+            ? context.colorTheme.tertiaryContainer
+            : Colors.transparent,
+        width: 1.5,
+      ),
+    );
   }
-
-
 }

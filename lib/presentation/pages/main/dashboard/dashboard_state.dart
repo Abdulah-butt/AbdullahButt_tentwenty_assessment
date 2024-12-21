@@ -1,10 +1,19 @@
-import 'dashboard_initial_params.dart';
+import '../../../../domain/entities/movie.dart';
 
 class DashboardState {
-final bool loading;
-const DashboardState({required this.loading});
+  final bool loading;
+  final List<Movie> movies;
 
-factory DashboardState.initial() => const DashboardState(loading: false);
+  const DashboardState({required this.loading, required this.movies});
 
-DashboardState copyWith({bool? loading}) => DashboardState(loading: loading??this.loading);
+  factory DashboardState.initial() => const DashboardState(
+        loading: false,
+        movies: [],
+      );
+
+  DashboardState copyWith({bool? loading, List<Movie>? movies}) =>
+      DashboardState(
+        loading: loading ?? this.loading,
+        movies: movies ?? this.movies,
+      );
 }

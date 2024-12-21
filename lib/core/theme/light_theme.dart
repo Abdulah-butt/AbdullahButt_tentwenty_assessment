@@ -42,11 +42,12 @@ final ThemeData LIGHT_THEME = ThemeData(
   ),
   appBarTheme: const AppBarTheme(
       backgroundColor: _lightScaffold,
-      elevation: 0.5,
+      elevation: 0,
+      centerTitle: false,
       titleTextStyle: TextStyle(
         color: _lightOnSurface,
-        fontSize: 15,
-        fontWeight: FontWeight.w600,
+        fontSize: 16,
+        fontWeight: FontWeight.w500,
       ),
       iconTheme: IconThemeData(color: Colors.black)),
   pageTransitionsTheme: PageTransitionsTheme(
@@ -84,5 +85,6 @@ final ThemeData LIGHT_THEME = ThemeData(
     tertiary: _lightTertiaryColor,
     onTertiary: _lightOnTertiaryColor,
     tertiaryContainer: _lightTertiaryContainerColor,
+    surfaceDim: _lightCardColor,
   ),
 );

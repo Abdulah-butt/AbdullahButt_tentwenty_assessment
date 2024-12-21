@@ -7,9 +7,20 @@ import 'package:tentwenty_assessment/presentation/pages/main/media_library/media
 import 'package:tentwenty_assessment/presentation/pages/main/media_library/media_library_page.dart';
 import 'package:tentwenty_assessment/presentation/pages/main/more/more_initial_params.dart';
 import 'package:tentwenty_assessment/presentation/pages/main/more/more_page.dart';
+import 'package:tentwenty_assessment/presentation/pages/main/movie_detail/movie_detail_initial_params.dart';
+import 'package:tentwenty_assessment/presentation/pages/main/movie_detail/ticket_date_booking/ticket_date_booking_initial_params.dart';
+import 'package:tentwenty_assessment/presentation/pages/main/movie_detail/ticket_seat_booking/ticket_seat_booking_initial_params.dart';
+import 'package:tentwenty_assessment/presentation/pages/main/movie_player/movie_player_initial_params.dart';
+import 'package:tentwenty_assessment/presentation/pages/main/search/search_initial_params.dart';
 import 'package:tentwenty_assessment/presentation/pages/main/watch/watch_initial_params.dart';
 import 'package:tentwenty_assessment/presentation/pages/main/watch/watch_page.dart';
 import 'package:url_strategy/url_strategy.dart';
+import '../../presentation/pages/main/movie_detail/movie_detail_page.dart';
+
+import '../../presentation/pages/main/movie_detail/ticket_date_booking/ticket_date_booking_page.dart';
+import '../../presentation/pages/main/movie_detail/ticket_seat_booking/ticket_seat_booking_page.dart';
+import '../../presentation/pages/main/movie_player/movie_player_page.dart';
+import '../../presentation/pages/main/search/search_page.dart';
 import '../../presentation/pages/splash/splash_initial_params.dart';
 import '../../presentation/pages/splash/splash_page.dart';
 import '../../service_locator/service_locator.dart';
@@ -92,9 +103,63 @@ class AppRouter {
               );
             },
           ),
-
+          GoRoute(
+            path: SearchPage.path,
+            builder: (context, state) {
+              return SearchPage(
+                cubit: getIt(),
+                initialParams: const SearchInitialParams(),
+              );
+            },
+          ),
         ]
       ),
+
+
+      GoRoute(
+        path: "${MovieDetailPage.path}/:id",
+        builder: (context, state) {
+          return MovieDetailPage(
+            cubit: getIt(),
+            initialParams:  MovieDetailInitialParams(
+                id: state.pathParameters['id']!,
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: "${TicketDateBookingPage.path}/:id",
+        builder: (context, state) {
+          return TicketDateBookingPage(
+            cubit: getIt(),
+            initialParams:  TicketDateBookingInitialParams(
+              id: state.pathParameters['id']!
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: TicketSeatBookingPage.path,
+        builder: (context, state) {
+          return TicketSeatBookingPage(
+            cubit: getIt(),
+            initialParams: const TicketSeatBookingInitialParams(),
+          );
+        },
+      ),
+      GoRoute(
+        path: MoviePlayerPage.path,
+        builder: (context, state) {
+          return MoviePlayerPage(
+            cubit: getIt(),
+            initialParams:  MoviePlayerInitialParams(
+              url: state.uri.queryParameters['url']!,
+            ),
+          );
+        },
+      ),
+
+
     ],
   );
 }

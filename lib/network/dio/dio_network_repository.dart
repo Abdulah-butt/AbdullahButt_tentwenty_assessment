@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
@@ -12,7 +15,7 @@ import '../network_repository.dart';
 
 class DioNetworkRepository implements NetworkRepository {
   /// localhost
-  String baseUrl = "http://localhost:5000";
+  String baseUrl = "https://api.themoviedb.org/3";
 
   final LocalDatabaseRepository _localDatabaseRepository;
 
@@ -38,10 +41,10 @@ class DioNetworkRepository implements NetworkRepository {
   Future<dynamic> sendRequest(
       final String endpoint, {
         final NetworkRequestMode mode = NetworkRequestMode.get,
-        final Map<String, dynamic> parameters=const {},
-        final Map<String, dynamic> body=const {},
+         Map<String, dynamic> parameters=const {},
+        Map<String, dynamic>? body,
         final bool isFormData = false,
-        final bool getAllResponse = false,
+        final bool getAllResponse = true,
         final List<FileField>? fileFields,
   }) async {
     try {
@@ -49,7 +52,7 @@ class DioNetworkRepository implements NetworkRepository {
           ? {'Content-Type': 'multipart/form-data'}
           : {'Content-Type': 'application/json'};
       headers.addAll({
-        "Authorization": "Bearer ${await _localDatabaseRepository.getToken()}"
+       "Authorization": "Bearer ${dotenv.env['token']}"
       });
 
       String method = '';
@@ -69,7 +72,7 @@ class DioNetworkRepository implements NetworkRepository {
       }
 
       if (fileFields != null && fileFields.isNotEmpty) {
-        body.addAll(await _getFileFields(fileFields));
+        body?.addAll(await _getFileFields(fileFields));
       }
 
       Response response = await dio.request(
@@ -79,9 +82,9 @@ class DioNetworkRepository implements NetworkRepository {
           method: method,
           headers: headers,
         ),
-        data: isFormData?FormData.fromMap(body):body,
+        data: isFormData?FormData.fromMap(body!):body,
       );
-
+      log("got data: ${await response.data}");
       dynamic responseJson = await response.data;
       return getAllResponse ? responseJson : responseJson['data'];
     } on DioException catch (e) {
