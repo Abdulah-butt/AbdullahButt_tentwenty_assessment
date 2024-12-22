@@ -143,7 +143,12 @@ class AppRouter {
         builder: (context, state) {
           return TicketSeatBookingPage(
             cubit: getIt(),
-            initialParams: const TicketSeatBookingInitialParams(),
+            initialParams:  TicketSeatBookingInitialParams(
+              movieName: state.uri.queryParameters['movieName']??"",
+              hall: state.uri.queryParameters['hall']??"",
+              date: state.uri.queryParameters['date']??"",
+              movieId: state.uri.queryParameters['movieId']??"",
+            ),
           );
         },
       ),

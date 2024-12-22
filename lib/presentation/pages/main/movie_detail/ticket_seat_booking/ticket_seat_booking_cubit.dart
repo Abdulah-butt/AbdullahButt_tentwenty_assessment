@@ -24,4 +24,10 @@ class TicketSeatBookingCubit extends Cubit<TicketSeatBookingState> {
     }
     emit(state.copyWith(selectedSeats:tempSeats));
   }
+
+  onRemoveAction(Seat seat){
+    List<Seat> tempSeats=List.from(state.selectedSeats);
+    tempSeats.remove(seat);
+    emit(state.copyWith(selectedSeats:tempSeats));
+  }
 }

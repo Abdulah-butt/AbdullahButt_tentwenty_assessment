@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:tentwenty_assessment/core/extensions/theme_extension.dart';
 import 'package:tentwenty_assessment/core/utils/constants.dart';
+import 'package:tentwenty_assessment/domain/entities/cinema_hall.dart';
 import 'package:tentwenty_assessment/presentation/pages/main/movie_detail/ticket_date_booking/widgets/cinema_type_widget.dart';
 import 'package:tentwenty_assessment/presentation/widgets/custom_button.dart';
 import 'ticket_date_booking_cubit.dart';
@@ -87,9 +88,9 @@ class _TicketDateBookingState extends State<TicketDateBookingPage> {
                       itemBuilder: (context, index) {
                         DateTime dateTime = cubit.availableDates[index];
                         return MovieDateChip(
-                          isSelected: state.selectedDate==dateTime,
+                          isSelected: state.selectedDate == dateTime,
                           dateTime: dateTime,
-                          onSelectDate:cubit.onSelectDate,
+                          onSelectDate: cubit.onSelectDate,
                         );
                       },
                     ),
@@ -100,11 +101,15 @@ class _TicketDateBookingState extends State<TicketDateBookingPage> {
                   SizedBox(
                     height: 200,
                     child: ListView.builder(
-                      itemCount: 10,
+                      itemCount: cubit.availableCinemaHalls.length,
                       scrollDirection: Axis.horizontal,
                       itemBuilder: (context, index) {
+                        CinemaHall cinemaHall = cubit
+                            .availableCinemaHalls[index];
                         return CinemaTypeWidget(
-                          isSelected: index == 0,
+                          cinemaHall: cinemaHall,
+                          isSelected: cinemaHall == state.selectedCinemaHall,
+                          onTap: cubit.onCinemaHallSelect,
                         );
                       },
                     ),
@@ -116,13 +121,19 @@ class _TicketDateBookingState extends State<TicketDateBookingPage> {
         },
       ),
       bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding:
-          const EdgeInsets.symmetric(horizontal: kScreenHorizontalPadding),
-          child: CustomButton(
-            text: "Select Seats",
-            onTap: cubit.selectSeatAction,
-          ),
+        child: BlocBuilder<TicketDateBookingCubit, TicketDateBookingState>(
+          bloc: cubit,
+          builder: (context, state) {
+            return Padding(
+              padding:
+              const EdgeInsets.symmetric(horizontal: kScreenHorizontalPadding),
+              child: CustomButton(
+                text: "Select Seats",
+                isDisabled: state.selectedCinemaHall==null || state.selectedDate==null,
+                onTap: cubit.selectSeatAction,
+              ),
+            );
+          },
         ),
       ),
     );

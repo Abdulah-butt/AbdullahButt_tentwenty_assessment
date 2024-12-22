@@ -19,7 +19,7 @@ late AppNavigator navigator;
 mixin TicketSeatBookingRoute {
 openTicketSeatBooking(TicketSeatBookingInitialParams initialParams) {
 
- navigator.push(context, TicketSeatBookingPage.path, initialParams);
+ navigator.push(context, "${TicketSeatBookingPage.path}?movieId=${initialParams.movieId}&movieName=${initialParams.movieName}&hall=${initialParams.hall}&date=${initialParams.date}", initialParams);
 
 }
 

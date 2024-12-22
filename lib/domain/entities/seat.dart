@@ -1,6 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:tentwenty_assessment/core/enums/seat_status.dart';
-
 class Seat extends Equatable {
   int lineNo;
   int seatNo;
